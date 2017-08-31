@@ -157,6 +157,9 @@ SUMMARY of API ENDPOINTS
 
 Teams are given a unique API key. API keys may be changed at any time. Teams may decide how to distribute API keys.
 
+`http PUT token/`
+PUT new team token.
+
 `http GET outposts/`
 GET all outposts currently controlled by team
 
@@ -261,6 +264,7 @@ self-destruct
 
 TODO
 ====
+- what's the optimal map size such that teams can play the first rounds manually but will be forced to play later rounds with some automation mechanisms?
 - playtest
 - better name?
 - more sophisticated unit mechanics?
