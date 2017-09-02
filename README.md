@@ -106,11 +106,13 @@ Ships travel on a unit-by-unit basis; they must be commanded individually.
 
 All beams have unique tuning parameters that can be changed at any time.
 
-Upon submitting an API request to travel from one beam motivator to another, the travelling ship must provide the tuning parameters for the destination beam.
+Upon submitting an API request to travel from one beam motivator to another, the travelling ship must provide the tuning parameters for both the source and destination beam.
+
+(Note: you can share tuning parameters for your beam stations with your allies. *TODO*: Tuning parameters are probably just <int, int> vectors?)
 
 If the tuning parameters for the destination beam are within <%5 tolerance, then transit occurs normally.
 
-If the tuning parameters for the destination beam are between 5% and 50% tolerance, then the transiting ship is immediately destroyed, but both beam stations are left intact.
+If the tuning parameters for the destination beam are between 5% and 50% tolerance, then the transiting ship is immediately destroyed, but both beam stations are left intact. (*TODO*: tuning parameter alignment is just angle between 2d vectors?)
 
 *TODO:* Remove the following rules about bad tuning parameters? Why did I add them in the first place?
 
@@ -235,12 +237,6 @@ set outpost beam motivator to transit mode
 
 `{ "order": "abandon" }`
 abandon control of solar system outpost
-
-`{ "order": "grant", "team": [TEAM, ...] }`
-grant transit authority via beam motivator to teams
-
-`{ "order": "revoke", "team": [TEAM, ...] }`
-grant transit authority via beam motivator to teams
 
 ### unit order payloads:
 
