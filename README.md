@@ -157,7 +157,7 @@ SUMMARY of API ENDPOINTS
 
 Teams are given a unique API key. API keys may be changed at any time. Teams may decide how to distribute API keys.
 
-`http PUT token/`
+`http POST token/`
 PUT new team token.
 
 `http GET systems/`
@@ -180,22 +180,22 @@ Additionally, if team controls solar system outpost, return:
 `http GET systems/names/`
 GET all convenience names for all systems.
 
-`http PUT systems/<id:int|name:str>/name/`
+`http PUT system/<id:int|name:str>/name/`
 PUT a convenience name on an systems. Team does not have to control an systems to give it a convenience name.
 
-`http PUT systems/<id:int|name:str>/tuning`
+`http POST system/<id:int|name:str>/tuning`
 PUT a new set of tuning paramters on an systems. Payload may indicate to use specific parameters or to generate random parameters.
 
-`http PUT systems/<id:int|name:str>/orders`
+`http GET system/<id:int|name:str>/orders`
+GET a controlled system's order queue.
+
+`http PUT system/<id:int|name:str>/orders`
 PUT an order onto the end of a controlled systems's order queue. Returns failure if team does not control systems.
 
-`http PUT systems/<id:int|name:str>/orders/<order:int>`
-PUT an order onto the end of a controlled systems's order queue immediatel preceeding provided order ID.
-
-`http DELETE systems/<id:int|name:str>/orders`
+`http DELETE system/<id:int|name:str>/orders`
 DELETE (clear) all orders from systems's order queue.
 
-`http DELETE systems/<id:int|name:str>/orders/<order:int>`
+`http DELETE system/<id:int|name:str>/orders/<order:int>`
 DELETE specified order from systems's order queue.
 
 `http GET ships/`
@@ -212,11 +212,11 @@ GET all information for a given ship controlled by team. Information includes:
 `http PUT ship/<id:int>/name`
 PUT a convenience name on a ship. Ship does not have to be active to be given a convenience name.
 
+`http GET ship/<id:int|name:str>/orders`
+GET ship's order queue.
+
 `http PUT ship/<id:int|name:str>/orders`
 PUT a new order into at the end of a ship's order queue.
-
-`http PUT ship/<id:int|name:str>/orders/<order:int>`
-PUT a new order into a ship's order queue immediately preceeding provided order ID.
 
 `http DELETE ship/<id:int|name:str>/orders`
 DELETE (clear) all orders from ship's order queue.
