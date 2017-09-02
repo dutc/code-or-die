@@ -1,0 +1,39 @@
+\echo 'Code or Die (Bitemporality)'
+\echo 'James Powell <james@dontusethiscode.com>'
+\set VERBOSITY terse
+\set ON_ERROR_STOP true
+
+do language plpgsql $$ declare
+	exc_message text;
+	exc_context text;
+	exc_detail text;
+begin
+
+create extension if not exists temporal_tables;
+
+drop schema if exists history cascade;
+create schema if not exists history;
+
+{% for table in tables %}
+	alter table {{table}} add column asof tstzrange;
+	update {{table}} set asof = tstzrange(now() - interval '1 hour', 'infinity', '[)');
+	alter table {{table}} alter column asof set not null;
+
+	raise notice 'Creating table history."{{table}}"';
+	drop table if exists history."{{table}}" cascade;
+	create table if not exists history."{{table}}" (like {{table}});
+	create trigger versioning_trigger
+  	  before insert or update or delete on {{table}}
+  	  for each row execute procedure versioning('asof', 'history."{{table}}"', true);
+	create index on history."{{table}}" using gist (asof);
+	-- alter table history."{{table}}" add constraint exclude using gist (???, asof with &&);
+
+	alter table {{table}} inherit history."{{table}}";
+{% endfor %}
+
+exception when others then
+    get stacked diagnostics exc_message = message_text;
+    get stacked diagnostics exc_context = pg_exception_context;
+    get stacked diagnostics exc_detail = pg_exception_detail;
+    raise exception E'\n------\n%\n%\n------\n\nCONTEXT:\n%\n', exc_message, exc_detail, exc_context;
+end $$;
