@@ -112,10 +112,9 @@ If the tuning parameters for the destination beam are within <%5 tolerance, then
 
 If the tuning parameters for the destination beam are between 5% and 50% tolerance, then the transiting ship is immediately destroyed, but both beam stations are left intact.
 
-If the tuning parameters for the destination beam are between
-50% and 99% tolerance, then the transiting ship and all other untis at the source beam station are immediately destroyed. The source beam station does not become uncontrolled at this point.
+*TODO:* Remove the following rules about bad tuning parameters? Why did I add them in the first place?
 
-If the tuning parameters are 100% incorrect (totally inverted,) then the ship and the source beam station are immediately destroyed and a subspace inversion occurs at the source beam station, completely removing that system from the game map.
+If the tuning parameters for the destination beam are between 50% and 99% tolerance, then the transiting ship and all other untis at the source beam station are immediately destroyed. The source beam station does not become uncontrolled at this point. If the tuning parameters are 100% incorrect (totally inverted,) then the ship and the source beam station are immediately destroyed and a subspace inversion occurs at the source beam station, completely removing that system from the game map.
 
 If 50% of all solar systems are destroyed, this triggers subspace inversion cascade. Cascade travels along the beam network at FTL-speeds until it spreads to the entire map. Catastrophic galactical subspace inversion. Game over.
 
