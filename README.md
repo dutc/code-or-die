@@ -60,18 +60,20 @@ Teams have complete visibility of any systems they control. Teams can see all ad
 
 Teams have complete visibility of any systems where they have units positioned. Teams have no adjacent-node visibility unless they control a system.
 
-Visibilty allows teams to see
+Visibilty allows teams to see:
 - total unit strength of all parties present
 - current controlling party of a system (namely: the controller of its beam motivator)
 
 SHIPS
 -----
 
-All ships are identical.
+All units are identical.
 
 Ships can be instructed to travel to a destination (node-by-node fast-travel) via FTL or beam.
 
 Beam travel is nearly instantaneous. FTL travel time is based on edge weights. All travel is node-by-node. Travel destination must be specified on an immediate-next-node basis.
+
+e.g., systems A, B, and C are connected A → B → C. To transit from A to C, a ship must be instructed to first transit from A to B then B to C.
 
 Ship actions belong to a queue (to facilitate multi-hop travel and complex actions.) Queued actions can be canceled.
 
@@ -95,7 +97,7 @@ When contesting control of a system, the party with the most ships present gains
 
 e.g., Team A controls New Earth II and has 100 ships stationed there. Team B, an ally, moves 10 ships to New Earth II. Team A can relase control of system. Team B can immediately take control of system, as it is uncontrolled. Team C moves 50 ships to New Earth II. Team C can contest and win control of New Earth II, because Team C has 50 ships vs current controlling Team B's 10 ships. Team A can immediately contest control from Team C, with team A winning, because it has the most ships.
 
-**TODO:** You must control a solar system or be granted transit authority to use its beam motivator?
+The team controlling a solar system outpost is allowed to change the outpost's beam tuning parameters at any time. (Note: you must know the tuning parameters for the source & destination beam motivators to safely travel between the two systems.)
 
 BEAM MOTIVATORS
 ---------------
@@ -104,19 +106,17 @@ Ships can attempt near-instantaneously travel between any two beam motivators. B
 
 Ships travel on a unit-by-unit basis; they must be commanded individually.
 
-All beams have unique tuning parameters that can be changed at any time.
+All beams have unique tuning parameters that can be changed at any time by the team in control of the beam motivator.
 
 Upon submitting an API request to travel from one beam motivator to another, the travelling ship must provide the tuning parameters for both the source and destination beam.
+
+**TODO:** what do tuning parameters look like? Should it be possible to (slowly) brute force them?
 
 (Note: you can share tuning parameters for your beam stations with your allies. *TODO*: Tuning parameters are probably just <int, int> vectors?)
 
 If the tuning parameters for the destination beam are within <%5 tolerance, then transit occurs normally.
 
-If the tuning parameters for the destination beam are between 5% and 50% tolerance, then the transiting ship is immediately destroyed, but both beam stations are left intact. (*TODO*: tuning parameter alignment is just angle between 2d vectors?)
-
-*TODO:* Remove the following rules about bad tuning parameters? Why did I add them in the first place?
-
-If the tuning parameters for the destination beam are between 50% and 99% tolerance, then the transiting ship and all other untis at the source beam station are immediately destroyed. The source beam station does not become uncontrolled at this point. If the tuning parameters are 100% incorrect (totally inverted,) then the ship and the source beam station are immediately destroyed and a subspace inversion occurs at the source beam station, completely removing that system from the game map.
+If the tuning parameters for the destination beam are >5% tolerance, then the transiting ship is immediately destroyed. (*TODO*: tuning parameter alignment is just angle between 2d vectors?)
 
 If 50% of all solar systems are destroyed, this triggers subspace inversion cascade. Cascade travels along the beam network at FTL-speeds until it spreads to the entire map. Catastrophic galactical subspace inversion. Game over.
 
@@ -133,8 +133,6 @@ Subspace damage can be repaired by setting beam motivator to REPAIR mode. This s
 **TODO:** can teams see inversion "waves" incident on their controlling station (thus knowing that someone lost an outpost, and, based on the strength, approximately where that outpost was)?
 
 **TODO:** what does the decay rate look like? Penalize beam-connected stations more than FTL-connected stations. Decay rate should drop off very quickly (but still travel network-wide.) Decay rate via FTL and via beam-connectivity are cumulative. This should eventually penalise beam use, because everyone's home planet will be beam-connected to SOMEWHERE in the network.
-
-**TODO:** what do tuning parameters look like? Should it be possible to (slowly) brute force them?
 
 HYPERRELAY
 ----------
