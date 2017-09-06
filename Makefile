@@ -1,31 +1,28 @@
-SHELL = $(PWD)/env /bin/zsh
-
-DATABASE = code-or-die
+ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+SHELL    := $(ROOT_DIR)/env /bin/zsh
+DB_DIR   := $(ROOT_DIR)/../db
+LOGS_DIR := $(DB_DIR)/logs
+DATABASE := code-or-die
 
 .PHONY: test
 test:
 	which psql jinja2 || exit 1
-	psql -d $(DATABASE) < layout.sql
-	psql -d $(DATABASE) <<( ./bitemporal.sh "$(DATABASE)" )
-	psql -d $(DATABASE) < dummy.sql
+	psql -d "$(DATABASE)" < "$(ROOT_DIR)/layout.sql"
+	psql -d "$(DATABASE)" <<( "$(ROOT_DIR)/bitemporal.sh" "$(DATABASE)" )
+	psql -d "$(DATABASE)" < "$(ROOT_DIR)/dummy.sql"
+	psql -d "$(DATABASE)" <<( "$(ROOT_DIR)/orm.sh" "$(DATABASE)"  )
 
 .PHONY: dump.sql
 dump.sql:
 	tables=(objects.{civilizations,systems,ships},names.{civilizations,systems,ships},orders.{systems,ships},events.{build,transit,attack,warp}) && \
-	pg_dump -d $(DATABASE) --data-only --column-inserts $${(z)tables/#/-t } > dump.sql
+	pg_dump -d "$(DATABASE)" --data-only --column-inserts $${(z)tables/#/-t } > dump.sql
 
 .PHONY: start-db stop-db db-shell run-db
 start-db:
-	pg_ctl -D $(PWD)/database -l $(PWD)/database-logs/"`date`.log" start
+	pg_ctl -D "$(DB_DIR)" -l "$(LOGS_DIR)/`date +%Y-%m-%d.%H%M%S`.log" start
 stop-db:
-	pg_ctl -D database stop
+	pg_ctl -D "$(DB_DIR)" stop
+run-db:
+	./run-db.sh "$(DB_DIR)" "$(LOGS_DIR)"
 db-shell:
-	PSQLRC=psqlrc psql -d $(DATABASE)
-
-.PHONY: start-flask-debug
-run-flask-debug:
-	FLASK_CONFIG=config.py FLASK_APP=api FLASK_DEBUG=1 PYTHONPATH=. flask run
-
-.PHONY: flask-shell
-flask-shell:
-	FLASK_CONFIG=config.py FLASK_APP=api FLASK_DEBUG=1 PYTHONPATH=. flask shell
+	PSQLRC=psqlrc psql -d "$(DATABASE)"
