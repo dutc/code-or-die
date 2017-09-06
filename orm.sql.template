@@ -1,0 +1,53 @@
+\echo 'Code or Die (ORM)'
+\echo 'James Powell <james@dontusethiscode.com>'
+\set VERBOSITY terse
+\set ON_ERROR_STOP true
+
+do language plpgsql $$ declare
+	exc_message text;
+	exc_context text;
+	exc_detail text;
+begin
+	set search_path = orm, public;
+
+    drop schema if exists orm cascade;
+    create schema if not exists orm;
+
+    drop function if exists gormless_init();
+    create or replace function gormless_init()
+        returns boolean
+    as $py$
+        from dill import dumps
+        from sys import path
+        # path.insert(0, '...') # dir containing orm.py
+        GD['__init__'] = True
+        return GD['__init__']
+    $py$ language plpython3u;
+
+{% for type, column, table in tables %}
+    drop function if exists {{type}}(oid oid, data {{table}});
+    create or replace function {{type}}(oid oid, data {{table}})
+        returns bytea
+    as $py$
+        if not GD.get('__init__'): plpy.execute('select from orm.gormless_init()')
+        from dill import dumps
+        from orm import {{type}}
+        return dumps({{type}}(oid, data))
+    $py$ language plpython3u;
+
+    drop view if exists "{{table}}" cascade;
+    create or replace view "{{table}}" as (
+	    select {{type}}(x.oid, x.*) as {{column}}
+	           , x.oid
+	           , '{{table}}'::regclass as table
+	           , x.*
+	    from {{table}} as x
+	);
+{% endfor %}
+
+exception when others then
+    get stacked diagnostics exc_message = message_text;
+    get stacked diagnostics exc_context = pg_exception_context;
+    get stacked diagnostics exc_detail = pg_exception_detail;
+    raise exception E'\n------\n%\n%\n------\n\nCONTEXT:\n%\n', exc_message, exc_detail, exc_context;
+end $$;
