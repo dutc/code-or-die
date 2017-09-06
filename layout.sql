@@ -31,6 +31,12 @@ do $objects$ begin
 	drop type if exists beam_mode;
 	create type beam_mode as enum ('transit', 'repair');
 
+	drop type if exists tuning_params;
+	create type tuning_params as (
+	    real integer
+	    , imag integer
+	);
+
 	drop table if exists systems;
 	create table if not exists systems (
 		id serial primary key
@@ -38,8 +44,8 @@ do $objects$ begin
 		, mode beam_mode not null default 'transit'::beam_mode
 		, controller integer default null
 		, production integer default 1 check (production > 0)
-		, tuning integer[2] not null default '{0, 0}'::integer[2]
-	);
+		, tuning tuning_params  not null default row(0, 0)::tuning_params
+	) with oids;
 
 	drop table if exists routes;
 	create table if not exists routes (
@@ -55,7 +61,7 @@ do $objects$ begin
 		, name text not null
 		, homeworld integer not null references systems (id)
 		, token text not null
-	);
+	) with oids;
 
 	alter table systems add foreign key (controller) references civilizations (id);
 
@@ -68,7 +74,7 @@ do $objects$ begin
 		, shipyard integer not null references systems (id)
 		, location integer references systems (id)
 		, flag integer not null references civilizations (id)
-	);
+	) with oids;
 
 end $objects$;
 
@@ -155,7 +161,7 @@ do $events$ begin
 		, ship integer not null references objects.ships (id)
 		, origin integer not null references objects.systems (id)
 		, destination integer not null references objects.systems (id)
-		, tuning integer[2] not null
+		, tuning objects.tuning_params not null
 		, time timestamp with time zone not null default now()
 	);
 
