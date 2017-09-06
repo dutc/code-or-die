@@ -8,27 +8,28 @@ do language plpgsql $$ declare
 	exc_context text;
 	exc_detail text;
 begin
+	set search_path = history, public;
 
-create extension if not exists temporal_tables;
+    create extension if not exists temporal_tables;
 
-drop schema if exists history cascade;
-create schema if not exists history;
+    drop schema if exists history cascade;
+    create schema if not exists history;
 
 {% for table in tables %}
 	alter table {{table}} add column asof tstzrange;
 	update {{table}} set asof = tstzrange(now() - interval '1 hour', 'infinity', '[)');
 	alter table {{table}} alter column asof set not null;
 
-	raise notice 'Creating table history."{{table}}"';
-	drop table if exists history."{{table}}" cascade;
-	create table if not exists history."{{table}}" (like {{table}});
+	raise notice 'Creating table "{{table}}"';
+	drop table if exists "{{table}}" cascade;
+	create table if not exists "{{table}}" (like {{table}});
 	create trigger versioning_trigger
   	  before insert or update or delete on {{table}}
   	  for each row execute procedure versioning('asof', 'history."{{table}}"', true);
-	create index on history."{{table}}" using gist (asof);
-	-- alter table history."{{table}}" add constraint exclude using gist (???, asof with &&);
+	create index on "{{table}}" using gist (asof);
+	-- alter table "{{table}}" add constraint exclude using gist (???, asof with &&);
 
-	alter table {{table}} inherit history."{{table}}";
+	alter table {{table}} inherit "{{table}}";
 {% endfor %}
 
 exception when others then
