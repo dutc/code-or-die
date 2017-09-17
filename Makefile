@@ -1,5 +1,5 @@
 ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-SHELL    := $(ROOT_DIR)/env /bin/zsh
+SHELL    := /bin/zsh
 DB_DIR   := $(ROOT_DIR)/../db
 LOGS_DIR := $(DB_DIR)/logs
 DATABASE := code-or-die
@@ -7,10 +7,10 @@ DATABASE := code-or-die
 .PHONY: test
 test:
 	which psql jinja2 || exit 1
-	psql -d "$(DATABASE)" < "$(ROOT_DIR)/layout.sql"
-	psql -d "$(DATABASE)" <<( "$(ROOT_DIR)/bitemporal.sh" "$(DATABASE)" )
-	psql -d "$(DATABASE)" < "$(ROOT_DIR)/dummy.sql"
-	psql -d "$(DATABASE)" <<( "$(ROOT_DIR)/orm.sh" "$(DATABASE)"  )
+	psql -h db -p 5432 -U postgres -d "$(DATABASE)" < "$(ROOT_DIR)/layout.sql"
+	psql -h db -p 5432 -U postgres -d "$(DATABASE)" <<( "$(ROOT_DIR)/bitemporal.sh" "$(DATABASE)" )
+	psql -h db -p 5432 -U postgres -d "$(DATABASE)" < "$(ROOT_DIR)/dummy.sql"
+	psql -h db -p 5432 -U postgres -d "$(DATABASE)" <<( "$(ROOT_DIR)/orm.sh" "$(DATABASE)"  )
 
 .PHONY: dump.sql
 dump.sql:
