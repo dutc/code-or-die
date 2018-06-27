@@ -45,7 +45,7 @@ The winning team is the team that controls the most systems at the end of the ga
 
 The game is played in real-time via JSON API requests against this game engine.
 
-Players control individual ship units and solar system outpots via API requests.
+Players control individual ship units and solar system outposts via API requests.
 
 MAP
 ---
