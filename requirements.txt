@@ -8,7 +8,7 @@ httpie==0.9.9
 idna==2.6
 itsdangerous==0.24
 Jinja2==2.9.6
-jinja2-cli==0.7.0.dev0
+jinja2-cli==0.6
 MarkupSafe==1.0
 mpmath==0.19
 networkx==1.11
