@@ -4,7 +4,7 @@ click==6.7
 decorator==4.1.2
 dill==0.2.7.1
 Flask==0.12.2
-httpie==0.9.9
+httpie==3.1.0
 idna==2.6
 itsdangerous==0.24
 Jinja2==2.9.6
